@@ -27,10 +27,10 @@ scorelimit = 0.98
 threshvariable = 255
 #diffpic, threshpic = None, None
 camera = PiCamera()
-picwidth = 640
-picheight = 480
+picwidth = 576
+picheight = 432
 camera.resolution = (picwidth, picheight)
-camera.start_preview()
+#camera.start_preview()
 sleep(2)
 
 ledpin = 18 #12 BOARD or 18 BCM
@@ -41,22 +41,36 @@ GPIO.output(ledpin, GPIO.LOW)
 #display variables
 pygame.init()
 pygame.font.init()
-boxfont = pygame.font.SysFont('Arial', 30)
-picfont = pygame.font.SysFont('Arial', 18)
-display_width = 1280 + 50   # 2 x 640 + 50 = 1330
-display_height = 960 + 50   # 2 x 480 + 50 = 1010
-screen = pygame.display.set_mode((display_width,display_height))
+boxfont = pygame.font.Font('/home/pi/.fonts/OpenSans-Light.ttf', 20)
+boxfontbold = pygame.font.Font('/home/pi/.fonts/OpenSans-Bold.ttf', 20)
+picfont = pygame.font.Font('/home/pi/.fonts/OpenSans-Light.ttf', 18)
+headerfont = pygame.font.Font('/home/pi/.fonts/OpenSans-Bold.ttf', 30)
+display_width = 1920 #1280 + 50    # 2 x 640 + 50 = 1330
+display_height = 1080 #960 + 50   # 2 x 480 + 50 = 1010
+screen = pygame.display.set_mode((display_width,display_height),pygame.FULLSCREEN)
 #pygame.display.set_caption('AV cleanliness super smart mega system 3000')
 black = (39,42,44)
 white = (255,255,255)
-red = (255,135,135)
-green = (194,255,192)
+red = (248,203,202) #(255,135,135)
+darkred = (204,51,51)
+green = (225,240,223) #(194,255,192)
+darkgreen = (51,153,51)
 yellow = (246,198,120)
-crossthickness = 50
-boxwidth = 250
-boxheight = 150
+crossthickness = 30
+boxwidth = 220
+boxheight = 80
 borderwidth = 7
+x1=display_width/2-crossthickness/2-picwidth
+y1=display_height-picheight*2-crossthickness-40
+x2=display_width/2+crossthickness/2
+y2=display_height-picheight-40
+middlex=x2-crossthickness/2
+middley=y2-crossthickness/2
 screen.fill(black)
+DDLogo = pygame.image.load("DDLogo.png")
+DDLogo = pygame.transform.scale(DDLogo,(138,63))
+headertext = headerfont.render("VEHICLE CLEANLINESS DETECTION SYSTEM", False, black)
+headertextwidth = headertext.get_width()
 pygame.display.update()
 
 #functions
@@ -67,16 +81,18 @@ pygame.display.update()
     #     return False
 def takeRefPic():
     GPIO.output(ledpin, GPIO.HIGH)
+    sleep(0.5)
     camera.capture("images/refpic.jpg")
     pic = cv2.imread("images/refpic.jpg")
+    sleep(0.5)
     GPIO.output(ledpin, GPIO.LOW)
     return pic
 def takeNewPic():
     GPIO.output(ledpin, GPIO.HIGH)
-    sleep(1)
+    sleep(0.5)
     camera.capture("images/newpic.jpg")
     pic = cv2.imread("images/newpic.jpg")
-    sleep(1)
+    sleep(0.5)
     GPIO.output(ledpin, GPIO.LOW)
     return pic
 def checkDifference(ref, new):
@@ -124,9 +140,10 @@ def checkDifference(ref, new):
     cv2.imwrite("images/diffpic.jpg", diffpic)
     cv2.imwrite("images/newpic.jpg", newpic)
     #cv2.imwrite("images/refpic.jpg", refpic)
-    if objdetect:
-    	object_detection.detect(newpic)
     
+    if objdetect and score<scorelimit:
+    	object_detection.detect(newpic)
+
     if score<scorelimit:
         return True
     else:
@@ -134,68 +151,72 @@ def checkDifference(ref, new):
 
 def updateDisplay(stat):
     if stat: #update display variables
-	statustext = ["DIFFERENCE","DETECTED"]
+	statustext = "Difference detected"
         statuscolor = red
+	fontcolor = darkred
     else:
-        statustext = "LOOKS GOOD"
+        statustext = "Looks good"
         statuscolor = green
+	fontcolor = darkgreen
     screen.fill(statuscolor)
 
+    screen.blit(headertext, (middlex-headertextwidth/2,y1-110))
+    showImage(DDLogo,20,display_height-90)
     #show images
     refpicPygame = pygame.image.load("images/refpic.jpg")
-    showImage(refpicPygame,0,0)
+    showImage(refpicPygame,x1,y1)
     newpicPygame = pygame.image.load("images/newpic.jpg")
-    showImage(newpicPygame,picwidth+crossthickness,0)
+    showImage(newpicPygame,x2,y1)
     diffpicPygame = pygame.image.load("images/diffpic.jpg")
-    showImage(diffpicPygame,0,picheight+crossthickness)
+    showImage(diffpicPygame,x1,y2)
     threshpicPygame = pygame.image.load("images/threshpic.jpg")
-    showImage(threshpicPygame,picwidth+crossthickness,picheight+crossthickness)
+    showImage(threshpicPygame,x2,y2)
 
     #rectangles around pictures
-    pygame.draw.rect(screen,yellow,(0+borderwidth/2,0+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#up left
-    pygame.draw.rect(screen,yellow,(0,0,picwidth/5,picheight/12),0)
-    refpictext = picfont.render("REFERENCE", False, black)
+    #pygame.draw.rect(screen,yellow,(0+borderwidth/2,0+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#up left
+    #pygame.draw.rect(screen,yellow,(0,0,picwidth/5,picheight/12),0)
+    refpictext = picfont.render("reference", False, black)
     refpictextwidth = refpictext.get_width()
-    screen.blit(refpictext, (picwidth/5/2-refpictextwidth/2,borderwidth+5))
+    screen.blit(refpictext, (x1,y1-31))
 
-    pygame.draw.rect(screen,yellow,(picwidth+crossthickness+borderwidth/2,0+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#up right
-    pygame.draw.rect(screen,yellow,(picwidth*2+crossthickness-picwidth/5,0,picwidth/5,picheight/12),0)
-    newpictext = picfont.render("NEW", False, black)
+    #pygame.draw.rect(screen,yellow,(picwidth+crossthickness+borderwidth/2,0+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#up right
+    #pygame.draw.rect(screen,yellow,(picwidth*2+crossthickness-picwidth/5,0,picwidth/5,picheight/12),0)
+    newpictext = picfont.render("new", False, black)
     newpictextwidth = newpictext.get_width()
-    screen.blit(newpictext, (picwidth*2+crossthickness-picwidth/10-newpictextwidth/2,borderwidth+5))
+    screen.blit(newpictext, (x2,y1-31))
 
-    pygame.draw.rect(screen,yellow,(0+borderwidth/2,picheight+crossthickness+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#down left
-    pygame.draw.rect(screen,yellow,(0,picheight+crossthickness,picwidth/5,picheight/12),0)
-    diffpictext = picfont.render("DIFFERENCE", False, black)
+    #pygame.draw.rect(screen,yellow,(0+borderwidth/2,picheight+crossthickness+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#down left
+    #pygame.draw.rect(screen,yellow,(0,picheight+crossthickness,picwidth/5,picheight/12),0)
+    diffpictext = picfont.render("difference", False, black)
     diffpictextwidth = diffpictext.get_width()
-    screen.blit(diffpictext, (picwidth/5/2-diffpictextwidth/2,picheight+crossthickness+borderwidth+5))
+    screen.blit(diffpictext, (x1,y2+picheight+3))
 
-    pygame.draw.rect(screen,yellow,(picwidth+crossthickness+borderwidth/2,picheight+crossthickness+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#down right
-    pygame.draw.rect(screen,yellow,(picwidth*2+crossthickness-picwidth/5,picheight+crossthickness,picwidth/5,picheight/12),0)
-    threshpictext = picfont.render("BINARY", False, black)
+    #pygame.draw.rect(screen,yellow,(picwidth+crossthickness+borderwidth/2,picheight+crossthickness+borderwidth/2,picwidth-borderwidth/2,picheight-borderwidth/2),borderwidth)	#down right
+    #pygame.draw.rect(screen,yellow,(picwidth*2+crossthickness-picwidth/5,picheight+crossthickness,picwidth/5,picheight/12),0)
+    threshpictext = picfont.render("binary", False, black)
     threshpictextwidth = threshpictext.get_width()
-    screen.blit(threshpictext, (picwidth*2+crossthickness-picwidth/10-threshpictextwidth/2,picheight+crossthickness+borderwidth+5))
+    screen.blit(threshpictext, (x2,y2+picheight+3))
 
     #box in the middle
-    pygame.draw.rect(screen,statuscolor,(picwidth+crossthickness/2-boxwidth/2,picheight+crossthickness/2-boxheight/2,boxwidth,boxheight),0)
-    pygame.draw.rect(screen,yellow,(picwidth+crossthickness/2-boxwidth/2,picheight+crossthickness/2-boxheight/2,boxwidth,boxheight),5)
+    pygame.draw.rect(screen,statuscolor,(x2-crossthickness/2-boxwidth/2,y2-crossthickness/2-boxheight/2,boxwidth,boxheight),0)
+    #pygame.draw.rect(screen,yellow,(picwidth+crossthickness/2-boxwidth/2,picheight+crossthickness/2-boxheight/2,boxwidth,boxheight),5)
 
     #show status
-    if status==True:
-    	loc = 0
-    	for i in range(len(statustext)):
-    		boxtext = boxfont.render(statustext[i], False, black)
-    		boxtextwidth = boxtext.get_width()
-    		screen.blit(boxtext, (picwidth+crossthickness/2-boxtextwidth/2,picheight+crossthickness/2-boxheight/2.5+loc))
-		loc+=40
-    else:
-    	boxtext = boxfont.render(statustext, False, black)
-    	boxtextwidth = boxtext.get_width()
-    	screen.blit(boxtext, (picwidth+crossthickness/2-boxtextwidth/2,picheight+crossthickness/2-boxheight/2.5))
-    scoretext = boxfont.render("SSIM = " + str("{0:.3f}".format(score)), False, black)
+    #if status==True:
+    	#loc = 0
+    	#for i in range(len(statustext)):
+    	#	boxtext = boxfontbold.render(statustext[i], False, fontcolor)
+    	#	boxtextwidth = boxtext.get_width()
+    	#	screen.blit(boxtext, (middlex-boxtextwidth/2,middley-boxheight/2.5+loc))
+	#	loc+=40
+    #else:
+    boxtext = boxfontbold.render(statustext, False, fontcolor)
+    boxtextwidth = boxtext.get_width()
+    screen.blit(boxtext, (middlex-boxtextwidth/2,middley-boxheight/2.5+3))
+    scoretext = boxfont.render("SSIM = " + str("{0:.3f}".format(score)), False, fontcolor)
     scoretextwidth = scoretext.get_width()
     
-    screen.blit(scoretext, (picwidth+crossthickness/2-scoretextwidth/2,picheight+crossthickness))
+    screen.blit(scoretext, (middlex-scoretextwidth/2,y2-17))
 
     pygame.display.update()
 
@@ -226,6 +247,7 @@ while True:
                 takepic = True
             if event.key == pygame.K_q:
 		GPIO.cleanup()
+		#camera.release()
                 pygame.quit()
                 quit()
 
