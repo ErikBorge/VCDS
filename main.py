@@ -13,7 +13,7 @@ from time import sleep
 import contours
 import object_detection
 
-objdetect = False
+objdetect = True
 if objdetect:
 	object_detection.initialize()
 
