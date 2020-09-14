@@ -6,10 +6,12 @@ https://imagine.deloittedigital.no/project/vehicle-cleanliness-detection-system
     <img src="Photos/VCDS-heading-image.jpg" width="700" alt="VCDS picture"/>
   </p>
   <div style={{display: "flex"}}>
-    <img src="Photos/in-action examples/example interface looks good.png" width="200" alt="VCDS example no difference" title="VCDS example no difference"/>
-    <img src="Photos/in-action examples/example interface objects.png" width="200" alt="VCDS example objects" title="VCDS example objects"/>
-    <img src="Photos/in-action examples/example objdetect person chair.png" width="200" alt="VCDS example object detection" title="VCDS example object detection"/>
-    <img src="Photos/in-action examples/example interface trash.png" width="200" alt="VCDS example trash" title="VCDS example trash"/>
+    <p align="center">
+      <img src="Photos/in-action examples/example interface looks good.png" width="200" alt="VCDS example no difference" title="VCDS example no difference"/>
+      <img src="Photos/in-action examples/example interface objects.png" width="200" alt="VCDS example objects" title="VCDS example objects"/>
+      <img src="Photos/in-action examples/example objdetect person chair.png" width="200" alt="VCDS example object detection" title="VCDS example object detection"/>
+      <img src="Photos/in-action examples/example interface trash.png" width="200" alt="VCDS example trash" title="VCDS example trash"/>
+    </p>
   </div>
 </div>
 
