@@ -1,0 +1,12 @@
+## this is just a list of packages included in main.py
+## need to fill inn version numbers
+## might not need every package (e.g. sys, time and picamera is likely to be system default
+pygame
+opencv
+numpy
+skimage
+argparse
+imutils
+sys
+picamera
+time
