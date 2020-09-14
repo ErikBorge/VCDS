@@ -1,7 +1,11 @@
 ## VCDS - Vehicle Cleanliness Detection System
 
 https://imagine.deloittedigital.no/project/vehicle-cleanliness-detection-system
-<img src="Photos/VCDS-heading-image.jpg" width="350" alt="VCDS picture"/>
+<img src="Photos/VCDS-heading-image.jpg" width="500" alt="VCDS picture"/>
+<img src="Photos/in-action examples/example interface looks good.png" width="300" alt="VCDS example no difference" title="VCDS example no difference"/>
+<img src="Photos/in-action examples/example interface objects.png" width="300" alt="VCDS example objects" title="VCDS example objects"/>
+<img src="Photos/in-action examples/example objdetect person chair.png" width="300" alt="VCDS example object detection" title="VCDS example object detection"/>
+<img src="Photos/in-action examples/example interface trash.png" width="300" alt="VCDS example trash" title="VCDS example trash"/>
 
 ### What
 Autonomous cars have been a topic for quite some time and although they haven’t really had their breakthrough yet, big car manufacturers are battling to be the first to have a really autonomous car on the road. In light of the popular sharing economy, one of the models they’re aiming for is fleets of shared autonomous cars. So how will this service look like? An inevitable consequence of having such a fleet will be maintenance and cleaning.
