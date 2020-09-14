@@ -1,6 +1,7 @@
 ## VCDS - Vehicle Cleanliness Detection System
 
 https://imagine.deloittedigital.no/project/vehicle-cleanliness-detection-system
+<img src="Photos/VCDS-heading-image.jpg" width="350" alt="VCDS picture"/>
 
 ### What
 Autonomous cars have been a topic for quite some time and although they haven’t really had their breakthrough yet, big car manufacturers are battling to be the first to have a really autonomous car on the road. In light of the popular sharing economy, one of the models they’re aiming for is fleets of shared autonomous cars. So how will this service look like? An inevitable consequence of having such a fleet will be maintenance and cleaning.
@@ -26,4 +27,3 @@ pip install -r requirements.txt
 python main.py
 
 ### 5. Watch the magic
-
